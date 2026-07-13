@@ -16,7 +16,6 @@ export default function ShiftDetailsPage() {
           Shift Details
         </h1>
 
-
         <div className="flex gap-3">
 
           <Link href="/roster">
@@ -24,7 +23,6 @@ export default function ShiftDetailsPage() {
               ← Roster
             </button>
           </Link>
-
 
           <Link href="/dashboard">
             <button className="rounded-xl bg-blue-600 px-5 py-3 font-bold text-white">
@@ -46,7 +44,6 @@ export default function ShiftDetailsPage() {
         <p className="mt-2 text-black">
           {params.id}
         </p>
-
 
       </div>
 
