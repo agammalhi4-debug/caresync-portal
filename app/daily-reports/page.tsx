@@ -1,111 +1,297 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
 
 export default function DailyReportsPage() {
+
+
+  const [reports, setReports] = useState<any[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+
+
+  useEffect(() => {
+
+    async function loadReports() {
+
+
+      const { data, error } = await supabase
+
+        .from("daily_reports")
+
+        .select(`
+
+          id,
+
+          report_id,
+
+          shift_date,
+
+          status,
+
+          report_submitted_at,
+
+
+          participants (
+
+            first_name,
+
+            last_name,
+
+            participant_id
+
+          ),
+
+
+          staff (
+
+            first_name,
+
+            last_name,
+
+            staff_id
+
+          ),
+
+
+          shifts (
+
+            shift_id,
+
+            start_time,
+
+            finish_time
+
+          )
+
+        `)
+
+        .order("created_at", {
+          ascending: false
+        });
+
+
+
+      if (error) {
+
+        console.log(error);
+
+      } else {
+
+        setReports(data || []);
+
+      }
+
+
+      setLoading(false);
+
+
+    }
+
+
+    loadReports();
+
+
+  }, []);
+
+
+
+
+
+  if (loading) {
+
+    return (
+
+      <main className="p-6">
+        Loading reports...
+      </main>
+
+    );
+
+  }
+
+
+
+
   return (
+
     <main className="min-h-screen bg-blue-50 p-6">
 
-      <div className="mb-8 flex items-center justify-between">
 
-        <div>
-          <h1 className="text-4xl font-bold text-black">
-            📝 Daily Reports
-          </h1>
+      <div className="mb-8 flex justify-between items-center">
 
-          <p className="mt-2 text-black">
-            View, create and manage participant daily reports.
+
+        <h1 className="text-4xl font-bold text-black">
+          📝 Daily Reports
+        </h1>
+
+
+        <Link href="/dashboard">
+
+          <button className="rounded-xl bg-gray-600 px-5 py-3 font-bold text-white">
+            ← Dashboard
+          </button>
+
+        </Link>
+
+
+      </div>
+
+
+
+
+
+      <div className="rounded-xl bg-white p-6 shadow">
+
+
+        {reports.length === 0 && (
+
+          <p className="text-black">
+            No daily reports yet.
           </p>
-        </div>
 
-        <div className="flex gap-3">
+        )}
 
-          <Link href="/dashboard">
-            <button className="rounded-xl bg-gray-600 px-6 py-3 font-bold text-white hover:bg-gray-700">
-              ← Dashboard
-            </button>
-          </Link>
 
-          <Link href="/daily-reports/new">
-            <button className="rounded-xl bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-700">
-              + New Report
-            </button>
-          </Link>
 
-        </div>
 
-      </div>
 
-      <div className="mb-6 flex gap-4">
 
-        <input
-          type="text"
-          placeholder="Search reports..."
-          className="flex-1 rounded-xl border border-gray-300 p-3 text-black"
-        />
+        <div className="space-y-5">
 
-        <input
-          type="date"
-          className="rounded-xl border border-gray-300 p-3 text-black"
-        />
 
-      </div>
+        {reports.map((report)=>(
 
-      <div className="overflow-hidden rounded-xl bg-white shadow">
 
-        <table className="w-full">
+          <div
 
-          <thead className="bg-gray-100">
+            key={report.id}
 
-            <tr>
+            className="rounded-xl border p-5"
 
-              <th className="p-4 text-left text-black">
-                Date
-              </th>
+          >
 
-              <th className="p-4 text-left text-black">
-                Participant
-              </th>
 
-              <th className="p-4 text-left text-black">
-                Staff Member
-              </th>
 
-              <th className="p-4 text-left text-black">
-                Shift
-              </th>
+            <h2 className="text-2xl font-bold text-black">
 
-              <th className="p-4 text-left text-black">
-                Status
-              </th>
+              {report.participants?.first_name}
 
-              <th className="p-4 text-left text-black">
-                Actions
-              </th>
+              {" "}
 
-            </tr>
+              {report.participants?.last_name}
 
-          </thead>
+            </h2>
 
-          <tbody>
 
-            <tr>
 
-              <td
-                colSpan={6}
-                className="p-10 text-center text-gray-500"
+
+
+            <p className="mt-2 text-black">
+
+              📝 Report ID:
+              {" "}
+              {report.report_id}
+
+            </p>
+
+
+
+
+
+            <p className="text-black">
+
+              📅 Date:
+              {" "}
+              {report.shift_date}
+
+            </p>
+
+
+
+
+
+            <p className="text-black">
+
+              👤 Staff:
+              {" "}
+              {report.staff?.first_name}
+
+              {" "}
+
+              {report.staff?.last_name}
+
+            </p>
+
+
+
+
+
+            <p className="text-black">
+
+              🕘 Shift:
+              {" "}
+              {report.shifts?.start_time}
+
+              {" - "}
+
+              {report.shifts?.finish_time}
+
+            </p>
+
+
+
+
+
+            <p className="mt-3 font-bold text-green-600">
+
+              Status:
+              {" "}
+              {report.status}
+
+            </p>
+
+
+
+
+
+            <Link href={`/daily-reports/${report.id}`}>
+
+              <button
+
+                className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"
+
               >
-                No daily reports found.
-              </td>
 
-            </tr>
+                View Report
 
-          </tbody>
+              </button>
 
-        </table>
+
+            </Link>
+
+
+
+
+          </div>
+
+
+        ))}
+
+
+
+        </div>
+
 
       </div>
+
 
     </main>
+
   );
+
 }

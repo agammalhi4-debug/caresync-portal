@@ -44,7 +44,7 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        <Link href="/roster">
+        <Link href="/shifts">
           <div className="cursor-pointer rounded-xl bg-white p-6 shadow hover:shadow-lg">
             <div className="mb-3 text-4xl">📅</div>
 

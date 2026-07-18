@@ -8,63 +8,46 @@ export default function AddParticipantPage() {
   const router = useRouter();
 
   const [form, setForm] = useState({
-    name: "",
-    dob: "",
-    ndis: "",
-    phone: "",
-    coordinator: "",
-    gp: "",
-    allergies: "",
-    medical: "",
-    behaviour: "",
-    emergencyName: "",
-    emergencyPhone: "",
+    participantId: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    email: "",
+    mobile: "",
+    medicalCondition: "",
   });
 
   function updateField(field: string, value: string) {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [field]: value,
-    });
+    }));
   }
 
   async function saveParticipant() {
-    try {
-      const { data, error } = await supabase
-        .from("participants")
-        .insert([
-          {
-            full_name: form.name,
-            dob: form.dob,
-            ndis_number: form.ndis,
-            phone: form.phone,
-            support_coordinator: form.coordinator,
-            gp_details: form.gp,
-            allergies: form.allergies,
-            medical_conditions: form.medical,
-            behaviour_support: form.behaviour,
-            emergency_contact_name: form.emergencyName,
-            emergency_contact_phone: form.emergencyPhone,
-          },
-        ])
-        .select();
+    const { error } = await supabase
+      .from("participants")
+      .insert([
+        {
+          participant_id: form.participantId,
+          first_name: form.firstName,
+          last_name: form.lastName,
+          date_of_birth: form.dateOfBirth || null,
+          email: form.email,
+          mobile: form.mobile,
+          medical_condition: form.medicalCondition,
+        },
+      ]);
 
-      console.log("Participant Data:", data);
-      console.log("Supabase Error:", error);
-
-      if (error) {
-        alert("Supabase Error: " + error.message);
-        return;
-      }
-
-      alert("✅ Participant saved successfully!");
-
-      router.push("/participants");
-
-    } catch (err) {
-      console.error("Fetch Error:", err);
-      alert("❌ Fetch Error. Open F12 → Console and send me the red error.");
+    if (error) {
+      alert(error.message);
+      console.log(error);
+      return;
     }
+
+    alert("✅ Participant saved!");
+
+    router.push("/participants");
   }
 
   return (
@@ -76,103 +59,90 @@ export default function AddParticipantPage() {
         </h1>
 
         <label className="mb-2 block font-medium text-black">
-          Full Name
+          Participant ID
         </label>
+
         <input
+          value={form.participantId}
+          onChange={(e) =>
+            updateField("participantId", e.target.value)
+          }
           className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.name}
-          onChange={(e) => updateField("name", e.target.value)}
+        />
+
+        <label className="mb-2 block font-medium text-black">
+          First Name
+        </label>
+
+        <input
+          value={form.firstName}
+          onChange={(e) =>
+            updateField("firstName", e.target.value)
+          }
+          className="mb-4 w-full rounded-lg border p-3 text-black"
+        />
+
+        <label className="mb-2 block font-medium text-black">
+          Last Name
+        </label>
+
+        <input
+          value={form.lastName}
+          onChange={(e) =>
+            updateField("lastName", e.target.value)
+          }
+          className="mb-4 w-full rounded-lg border p-3 text-black"
         />
 
         <label className="mb-2 block font-medium text-black">
           Date of Birth
         </label>
+
         <input
           type="date"
+          value={form.dateOfBirth}
+          onChange={(e) =>
+            updateField("dateOfBirth", e.target.value)
+          }
           className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.dob}
-          onChange={(e) => updateField("dob", e.target.value)}
         />
 
         <label className="mb-2 block font-medium text-black">
-          NDIS Number
+          Email
         </label>
+
         <input
+          type="email"
+          value={form.email}
+          onChange={(e) =>
+            updateField("email", e.target.value)
+          }
           className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.ndis}
-          onChange={(e) => updateField("ndis", e.target.value)}
         />
 
         <label className="mb-2 block font-medium text-black">
-          Phone Number
+          Mobile
         </label>
+
         <input
+          value={form.mobile}
+          onChange={(e) =>
+            updateField("mobile", e.target.value)
+          }
           className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.phone}
-          onChange={(e) => updateField("phone", e.target.value)}
         />
 
         <label className="mb-2 block font-medium text-black">
-          Support Coordinator
+          Medical Condition
         </label>
-        <input
-          className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.coordinator}
-          onChange={(e) => updateField("coordinator", e.target.value)}
-        />
 
-        <label className="mb-2 block font-medium text-black">
-          GP Details
-        </label>
         <textarea
-          className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.gp}
-          onChange={(e) => updateField("gp", e.target.value)}
-        />
-
-        <label className="mb-2 block font-medium text-black">
-          Allergies
-        </label>
-        <textarea
-          className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.allergies}
-          onChange={(e) => updateField("allergies", e.target.value)}
-        />
-
-        <label className="mb-2 block font-medium text-black">
-          Medical Conditions
-        </label>
-        <textarea
-          className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.medical}
-          onChange={(e) => updateField("medical", e.target.value)}
-        />
-
-        <label className="mb-2 block font-medium text-black">
-          Behaviour Support Plan
-        </label>
-        <textarea
-          className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.behaviour}
-          onChange={(e) => updateField("behaviour", e.target.value)}
-        />
-
-        <label className="mb-2 block font-medium text-black">
-          Emergency Contact Name
-        </label>
-        <input
-          className="mb-4 w-full rounded-lg border p-3 text-black"
-          value={form.emergencyName}
-          onChange={(e) => updateField("emergencyName", e.target.value)}
-        />
-
-        <label className="mb-2 block font-medium text-black">
-          Emergency Contact Phone
-        </label>
-        <input
+          rows={4}
+          value={form.medicalCondition}
+          onChange={(e) =>
+            updateField("medicalCondition", e.target.value)
+          }
           className="mb-6 w-full rounded-lg border p-3 text-black"
-          value={form.emergencyPhone}
-          onChange={(e) => updateField("emergencyPhone", e.target.value)}
         />
 
         <button

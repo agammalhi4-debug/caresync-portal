@@ -39,49 +39,51 @@ export default function AddStaffPage() {
 
   async function saveStaff() {
 
+if (!form.full_name) {
+  alert("Please enter staff name");
+  return;
+}
 
-    if (!form.full_name) {
+if (!form.role) {
+  alert("Please select a role");
+  return;
+}
 
-      alert("Please enter staff name");
-      return;
+setLoading(true);
 
-    }
+  // Generate a Staff ID
+  const staffId = `STF-${Date.now()}`;
 
+  const names = form.full_name.trim().split(" ");
 
-    setLoading(true);
+const firstName = names[0] || "";
+const lastName = names.slice(1).join(" ") || "Unknown";
 
+const { error } = await supabase
+  .from("staff")
+  .insert({
+    staff_id: staffId,
+    first_name: firstName,
+    last_name: lastName,
+    full_name: form.full_name,
+    date_of_birth: form.date_of_birth || null,
+    phone: form.phone || null,
+    email: form.email || null,
+    role: form.role || null,
+    employment_type: form.employment_type || null,
+  });
 
-
-    const { error } = await supabase
-      .from("staff")
-      .insert({
-        full_name: form.full_name,
-        date_of_birth: form.date_of_birth || null,
-        phone: form.phone || null,
-        email: form.email || null,
-        role: form.role || null,
-        employment_type: form.employment_type || null,
-      });
-
-
-
-    if (error) {
-
-      console.error(error);
-      alert(error.message);
-
-      setLoading(false);
-      return;
-
-    }
-
-
-
-    alert("Staff member added successfully");
-
-    router.push("/staff");
-
+  if (error) {
+    console.error(error);
+    alert(error.message);
+    setLoading(false);
+    return;
   }
+
+  alert("Staff member added successfully");
+
+  router.push("/staff");
+}
 
 
 

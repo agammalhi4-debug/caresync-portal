@@ -16,11 +16,12 @@ export default function ParticipantsPage() {
     const { data, error } = await supabase
       .from("participants")
       .select("*")
-      .order("full_name");
+      .order("first_name");
 
     if (error) {
       console.error(error);
       alert(error.message);
+      setLoading(false);
       return;
     }
 
@@ -33,35 +34,57 @@ export default function ParticipantsPage() {
 
       <div className="mb-8 flex items-center justify-between">
 
-        <h1 className="text-4xl font-bold text-black">
-          👥 Participants
-        </h1>
+        <div>
+          <h1 className="text-4xl font-bold text-black">
+            👥 Participants
+          </h1>
 
-        <Link
-          href="/participants/add"
-          className="rounded-lg bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
-        >
-          + Add Participant
-        </Link>
+          <p className="mt-2 text-black">
+            Manage your participants.
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+
+          <Link href="/dashboard">
+            <button className="rounded-xl bg-gray-600 px-5 py-3 font-bold text-white hover:bg-gray-700">
+              ← Dashboard
+            </button>
+          </Link>
+
+          <Link href="/participants/add">
+            <button className="rounded-xl bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700">
+              + Add Participant
+            </button>
+          </Link>
+
+        </div>
 
       </div>
 
-
       {loading ? (
+
         <p className="text-black">
           Loading participants...
         </p>
+
       ) : participants.length === 0 ? (
 
         <div className="rounded-xl bg-white p-6 shadow">
-          <p className="text-black">
-            No participants found.
+
+          <h2 className="text-xl font-bold text-black">
+            No participants
+          </h2>
+
+          <p className="mt-2 text-black">
+            Click Add Participant to create your first participant.
           </p>
+
         </div>
 
       ) : (
 
-        <div className="grid gap-5">
+        <div className="grid gap-6 md:grid-cols-2">
 
           {participants.map((participant) => (
 
@@ -70,27 +93,39 @@ export default function ParticipantsPage() {
               href={`/participants/${participant.id}`}
             >
 
-              <div className="rounded-xl bg-white p-6 shadow hover:shadow-lg">
+              <div className="rounded-xl bg-white p-6 shadow hover:shadow-lg transition">
 
                 <h2 className="text-2xl font-bold text-black">
-                  {participant.full_name}
+                  {participant.first_name} {participant.last_name}
                 </h2>
 
+                <div className="mt-4 space-y-2 text-black">
 
-                <p className="mt-2 text-black">
-                  NDIS Number: {participant.ndis_number}
-                </p>
+                  <p>
+                    <b>Date of Birth:</b>{" "}
+                    {participant.date_of_birth || "Not added"}
+                  </p>
 
+                  <p>
+                    <b>Phone:</b>{" "}
+                    {participant.phone || "Not added"}
+                  </p>
 
-                <p className="text-black">
-                  Phone: {participant.phone}
-                </p>
+                  <p>
+                    <b>Email:</b>{" "}
+                    {participant.email || "Not added"}
+                  </p>
 
+                  <p>
+                    <b>Address:</b>{" "}
+                    {participant.address || "Not added"}
+                  </p>
 
-                <p className="mt-3 text-blue-600 font-semibold">
+                </div>
+
+                <p className="mt-5 font-semibold text-blue-600">
                   View Profile →
                 </p>
-
 
               </div>
 
